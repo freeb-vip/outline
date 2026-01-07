@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "outline.fullname" . }}
+  labels:
+    {{- include "outline.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "outline.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "outline.selectorLabels" . | nindent 8 }}
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.outline.port }}
+              protocol: TCP
+          envFrom:
+            - configMapRef:
+                name: {{ include "outline.fullname" . }}-config
+            - secretRef:
+                name: {{ include "outline.fullname" . }}-env
+          env:
+            - name: DATABASE_URL
+              value: "postgres://$(DB_USER):$(DB_PASS)@$(DB_HOST):$(DB_PORT)/$(DB_NAME)"
+            - name: REDIS_URL
+              {{- if .Values.outline.redis.password }}
+              value: "redis://:$(REDIS_PASS)@$(REDIS_HOST):$(REDIS_PORT)"
+              {{- else }}
+              value: "redis://$(REDIS_HOST):$(REDIS_PORT)"
+              {{- end }}
+            - name: PGSSLMODE
+              value: "disable" # 或者根据外部DB需求配置
+          livenessProbe:
+            httpGet:
+              path: /_health
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /_health
+              port: http

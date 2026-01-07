@@ -1,0 +1,31 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "outline.fullname" . }}-config
+data:
+  URL: {{ .Values.outline.url | quote }}
+  PORT: {{ .Values.outline.port | quote }}
+  FORCE_HTTPS: {{ .Values.outline.forceHttps | quote }}
+  # Database pieces
+  DB_HOST: {{ .Values.outline.database.host | quote }}
+  DB_PORT: {{ .Values.outline.database.port | quote }}
+  DB_NAME: {{ .Values.outline.database.name | quote }}
+  DB_USER: {{ .Values.outline.database.user | quote }}
+  # Redis pieces
+  REDIS_HOST: {{ .Values.outline.redis.host | quote }}
+  REDIS_PORT: {{ .Values.outline.redis.port | quote }}
+  FILE_STORAGE: {{ .Values.outline.storage.type | quote }}
+  AWS_ACCESS_KEY_ID: {{ .Values.outline.storage.s3.accessKeyId | quote }}
+  AWS_REGION: {{ .Values.outline.storage.s3.region | quote }}
+  AWS_S3_UPLOAD_BUCKET_URL: {{ .Values.outline.storage.s3.uploadBucketUrl | quote }}
+  AWS_S3_UPLOAD_BUCKET_NAME: {{ .Values.outline.storage.s3.uploadBucketName | quote }}
+  {{- if .Values.outline.oidc.enabled }}
+  OIDC_CLIENT_ID: {{ .Values.outline.oidc.clientId | quote }}
+  OIDC_AUTH_URI: {{ .Values.outline.oidc.authUri | quote }}
+  OIDC_TOKEN_URI: {{ .Values.outline.oidc.tokenUri | quote }}
+  OIDC_USERINFO_URI: {{ .Values.outline.oidc.userinfoUri | quote }}
+  OIDC_LOGOUT_URI: {{ .Values.outline.oidc.logoutUri | quote }}
+  OIDC_DISPLAY_NAME: {{ .Values.outline.oidc.displayName | quote }}
+  OIDC_SCOPES: {{ .Values.outline.oidc.scopes | quote }}
+  OIDC_USERNAME_CLAIM: {{ .Values.outline.oidc.usernameClaim | quote }}
+  {{- end }}

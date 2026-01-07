@@ -1,0 +1,63 @@
+replicaCount: 1
+
+image:
+  repository: outlinewiki/outline
+  pullPolicy: IfNotPresent
+  tag: "latest"
+
+service:
+  type: ClusterIP
+  port: 8089
+
+outline:
+  url: "http://outline.example.com"
+  port: 3000
+  forceHttps: "false"
+
+  # 必须是 64 位 16 进制字符串
+  secretKey: "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
+  utilsSecret: "random_utils_secret"
+
+  database:
+    host: "external-db"
+    port: 5432
+    name: "outline"
+    user: "user"
+    password: "pass"
+
+  redis:
+    host: "external-redis"
+    port: 6379
+    password: "" # 可选
+
+  storage:
+    type: "s3"
+    s3:
+      accessKeyId: "aws_key_id"
+      secretAccessKey: "aws_secret_key"
+      region: "us-east-1"
+      uploadBucketUrl: "https://s3.amazonaws.com"
+      uploadBucketName: "outline-bucket"
+
+  oidc:
+    enabled: true
+    displayName: "OpenID"
+    clientId: "oidc_client_id"
+    clientSecret: "oidc_client_secret"
+    authUri: "https://auth.example.com/oauth2/authorize"
+    tokenUri: "https://auth.example.com/oauth2/token"
+    userinfoUri: "https://auth.example.com/oauth2/userinfo"
+    logoutUri: ""
+    scopes: "openid profile email"
+    usernameClaim: "preferred_username"
+
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+  hosts:
+    - host: outline.example.com
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
+  tls: []
