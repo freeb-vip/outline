@@ -28,21 +28,21 @@ spec:
             - secretRef:
                 name: {{ include "outline.fullname" . }}-env
           env:
-            - name: DATABASE_URL
-              value: "postgres://$(DB_USER):$(DB_PASS)@$(DB_HOST):$(DB_PORT)/$(DB_NAME)"
-            - name: REDIS_URL
-              {{- if .Values.outline.redis.password }}
-              value: "redis://:$(REDIS_PASS)@$(REDIS_HOST):$(REDIS_PORT)"
-              {{- else }}
-              value: "redis://$(REDIS_HOST):$(REDIS_PORT)"
-              {{- end }}
             - name: PGSSLMODE
               value: "disable" # 或者根据外部DB需求配置
           livenessProbe:
             httpGet:
               path: /_health
               port: http
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 6
           readinessProbe:
             httpGet:
               path: /_health
               port: http
+            initialDelaySeconds: 15
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 3

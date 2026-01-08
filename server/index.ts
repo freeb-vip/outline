@@ -203,13 +203,12 @@ async function start(_id: number, disconnect: () => void) {
 
     Logger.info(
       "lifecycle",
-      `Listening on ${useHTTPS ? "https" : "http"}://localhost:${port} / ${
-        env.URL
+      `Listening on ${useHTTPS ? "https" : "http"}://localhost:${port} / ${env.URL
       }`
     );
   });
 
-  server.listen(normalizedPort);
+  server.listen(normalizedPort, "0.0.0.0");
   server.setTimeout(env.REQUEST_TIMEOUT);
 
   ShutdownHelper.add(

@@ -20,4 +20,19 @@ RUN yarn build
 RUN yarn workspaces focus --production && \
   yarn cache clean
 
+# Clean up node_modules to reduce size
+RUN find ./node_modules -name "*.md" -delete && \
+  find ./node_modules -name "*.ts" -not -path "*/dist/*" -not -path "*/build/*" -delete && \
+  find ./node_modules -name "*.map" -delete && \
+  find ./node_modules -name "LICENSE*" -delete && \
+  find ./node_modules -name "CHANGELOG*" -delete && \
+  find ./node_modules -name "README*" -delete && \
+  find ./node_modules -name "*.test.js" -delete && \
+  find ./node_modules -name "*.spec.js" -delete && \
+  find ./node_modules -name "test" -type d -exec rm -rf {} + 2>/dev/null || true && \
+  find ./node_modules -name "tests" -type d -exec rm -rf {} + 2>/dev/null || true && \
+  find ./node_modules -name "docs" -type d -exec rm -rf {} + 2>/dev/null || true && \
+  find ./node_modules -name "examples" -type d -exec rm -rf {} + 2>/dev/null || true && \
+  find ./node_modules -name ".github" -type d -exec rm -rf {} + 2>/dev/null || true
+
 ENV PORT=3000

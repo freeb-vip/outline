@@ -4,6 +4,7 @@ import Koa from "koa";
 import bodyParser from "koa-body";
 import Router from "koa-router";
 import { AuthenticationError } from "@server/errors";
+import env from "@server/env";
 import authMiddleware from "@server/middlewares/authentication";
 import coalesceBody from "@server/middlewares/coaleseBody";
 import { Collection, Team, View } from "@server/models";
@@ -43,6 +44,8 @@ router.get("/redirect", authMiddleware(), async (ctx: APIContext) => {
 
   ctx.cookies.set("accessToken", jwtToken, {
     sameSite: "lax",
+    secure: env.FORCE_HTTPS,
+    httpOnly: false,
     expires: addMonths(new Date(), 3),
   });
   const [team, collection, view] = await Promise.all([

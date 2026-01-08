@@ -21,3 +21,8 @@ data/*
 !.yarn/plugins
 !.yarn/releases
 !.yarn/sdks
+
+value-*.yml
+values-*.yml
+charts/outline/values-*.yaml
+redis-k8s-product.yaml

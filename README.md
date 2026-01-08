@@ -104,3 +104,7 @@ yarn db:migrate --env test
 # License
 
 Outline is [BSL 1.1 licensed](LICENSE).
+
+
+
+docker build -t cr.freeb.vip/freeb/outline:1.0.0 .

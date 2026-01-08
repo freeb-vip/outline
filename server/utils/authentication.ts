@@ -136,15 +136,12 @@ export async function signIn(
   } else {
     ctx.cookies.set("accessToken", user.getJwtToken(expires), {
       sameSite: "lax",
-      expires,
-    });
+        secure: env.FORCE_HTTPS,
+        httpOnly: false,
+        expires,
+      });
 
-    const defaultCollectionId = team.defaultCollectionId;
-
-    if (defaultCollectionId) {
-      const collection = await Collection.findOne({
-        where: {
-          id: defaultCollectionId,
+      const defaultCollectionId = team.defaultCollectionId;
           teamId: team.id,
         },
         transaction,

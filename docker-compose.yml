@@ -2,14 +2,60 @@ services:
   redis:
     image: redis
     ports:
-      - "127.0.0.1:6379:6379"
-    user: "redis:redis"
+      - "127.0.0.1:7379:6379"
+
+    restart: unless-stopped
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
   postgres:
     image: postgres
     ports:
-      - "127.0.0.1:5432:5432"
+      - "127.0.0.1:15432:5432"
     environment:
       POSTGRES_USER: user
       POSTGRES_PASSWORD: pass
       POSTGRES_DB: outline
-    user: "postgres:postgres"
+      PGDATA: /var/lib/postgresql/data/pgdata
+    restart: unless-stopped
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user -d outline"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  outline:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      - postgres
+      - redis
+    environment:
+      NODE_ENV: production
+      URL: http://localhost:8089
+      PORT: 3000
+      SECRET_KEY: 0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef
+      UTILS_SECRET: utils_secret_key
+      DATABASE_URL: postgres://user:pass@postgres:5432/outline
+      REDIS_URL: redis://redis:6379
+      FILE_STORAGE: local
+      FILE_STORAGE_LOCAL_ROOT_DIR: /var/lib/outline/data
+      FORCE_HTTPS: "false"
+      PGSSLMODE: disable
+    ports:
+      - "8089:3000"
+    volumes:
+      - outline-data:/var/lib/outline/data
+    restart: unless-stopped
+
+volumes:
+  postgres-data:
+  redis-data:
+  outline-data:
